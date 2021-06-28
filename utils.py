@@ -31,7 +31,7 @@ def netaddr(ipaddr, port):
 
 
 # return value, len
-def processVarInt(payload):
+def process_var_int(payload):
     n0 = ord(payload[0])
     if n0 < 0xfd:
         return [n0, 1]
@@ -44,13 +44,13 @@ def processVarInt(payload):
 
 
 # return value, len
-def processVarStr(payload):
-    n, length = processVarInt(payload)
+def process_var_str(payload):
+    n, length = process_var_int(payload)
     return [payload[length:length+n], length + n]
 
 
 # takes 26 byte input, returns string
-def processAddr(payload):
+def process_addr(payload):
     assert(len(payload) >= 26)
     return '%d.%d.%d.%d:%d' % (ord(payload[20]), ord(payload[21]),
                                ord(payload[22]), ord(payload[23]),
@@ -123,15 +123,15 @@ class TestUtils(unittest.TestCase):
         self.assertEqual(varint(0x42), '\x42')
         self.assertEqual(varint(0x123), '\xfd\x23\x01')
         self.assertEqual(varint(0x12345678), '\xfe\x78\x56\x34\x12')
-        self.assertEqual(processVarInt(varint(0x42)), [0x42, 1])
-        self.assertEqual(processVarInt(varint(0x1234)), [0x1234, 3])
+        self.assertEqual(process_var_int(varint(0x42)), [0x42, 1])
+        self.assertEqual(process_var_int(varint(0x1234)), [0x1234, 3])
 
     def test_varstr(self):
         self.assertEqual(varstr('abc'), '\x03abc')
-        self.assertEqual(processVarStr('\x03abc'), ['abc', 4])
+        self.assertEqual(process_var_str('\x03abc'), ['abc', 4])
 
     def test_processAddr(self):
-        self.assertEqual(processAddr('x'*20 + '\x62\x91\x98\x16\x20\x8d'),
+        self.assertEqual(process_addr('x'*20 + '\x62\x91\x98\x16\x20\x8d'),
                          '98.145.152.22:8333')
 
     def test_countLeadingCharacters(self):
